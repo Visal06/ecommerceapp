@@ -101,7 +101,7 @@ class CategoryCard extends StatelessWidget {
       // Rounded corners for the Card.
       elevation: 4,
       // Sets the shadow or depth of the Card.
-      margin: const EdgeInsets.symmetric(vertical: 10),
+      margin: const EdgeInsets.symmetric(vertical: 8),
       // Vertical margin for spacing between the cards.
       child: ListTile(
         contentPadding: const EdgeInsets.all(16),
