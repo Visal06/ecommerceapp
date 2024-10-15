@@ -123,7 +123,7 @@ class CategoryCard extends StatelessWidget {
         title: Text(
           category.title,
           // Display the title of the category.
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
           // Sets font size and makes the text bold.
         ),
         trailing: const Icon(Icons.arrow_forward_ios, color: Colors.grey),
