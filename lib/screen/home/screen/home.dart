@@ -290,7 +290,11 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ),
-          // const SizedBox(height: 16.0),
+          const SizedBox(
+            height: 10,
+            child: Text('Most Product Features'),
+          ),
+
           // Products GridView with modern price label
           Expanded(
             child: GridView.builder(
