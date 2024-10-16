@@ -167,7 +167,7 @@ class _HomePageState extends State<HomePage> {
           ),
           // Categories ListView
           SizedBox(
-            height: 140, // Increase the height to accommodate the title
+            height: 122, // Increase the height to accommodate the title
             width: double.infinity,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
@@ -290,11 +290,19 @@ class _HomePageState extends State<HomePage> {
               },
             ),
           ),
-          const SizedBox(
-            height: 10,
-            child: Text('Most Product Features'),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  "Featured Products",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 17),
+                ),
+              ],
+            ),
           ),
-
+          const SizedBox(height: 7.0),
           // Products GridView with modern price label
           Expanded(
             child: GridView.builder(
