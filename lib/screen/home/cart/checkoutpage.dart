@@ -154,7 +154,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
               child: ElevatedButton(
                 onPressed: () {
                   _showPaymentBottomSheet(
-                      context); // Show bottom sheet for payment
+                    context,
+                    widget.totalAmounts, // Pass total amount here
+                  );
+                  // Show bottom sheet for payment
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.green.shade800,
@@ -181,7 +184,10 @@ class _CheckoutPageState extends State<CheckoutPage> {
   }
 
   // Method to show the payment bottom sheet
-  void _showPaymentBottomSheet(BuildContext context) {
+  void _showPaymentBottomSheet(
+    BuildContext context,
+    double totalAmounts,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true, // Allows the bottom sheet to be scrollable
@@ -221,6 +227,16 @@ class _CheckoutPageState extends State<CheckoutPage> {
                     color: Color.fromARGB(255, 14, 90, 16),
                   ),
                   textAlign: TextAlign.center, // Centered heading
+                ),
+                const SizedBox(height: 22.0),
+                Text(
+                  'TOTAL: \$${totalAmounts.toStringAsFixed(2)}', // Display total amount
+                  style: const TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                  textAlign: TextAlign.left, // Center the total amount
                 ),
                 const SizedBox(height: 16.0),
                 // Card widget containing payment input fields
