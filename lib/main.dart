@@ -5,7 +5,6 @@ import 'package:mycourse_flutter/model/response/productbycategorymodel.dart';
 import 'package:mycourse_flutter/screen/auth/screen/login.dart';
 import 'package:mycourse_flutter/screen/auth/screen/register.dart';
 import 'package:mycourse_flutter/screen/cart/screen/cart.dart';
-import 'package:mycourse_flutter/screen/cart/screen/payment.dart';
 import 'package:mycourse_flutter/screen/category/screen/categories.dart';
 import 'package:mycourse_flutter/screen/home/screen/favorite.dart';
 import 'package:mycourse_flutter/screen/home/screen/map.dart';
@@ -75,10 +74,6 @@ class MyApp extends StatelessWidget {
           if (settings.name == '/cart') {
             return MaterialPageRoute(builder: (context) => const CartPage());
           }
-          if (settings.name == '/payment') {
-            return MaterialPageRoute(builder: (context) => const Payment());
-          }
-
           if (settings.name == '/productcategory') {
             final Categories categ = settings.arguments as Categories;
             return MaterialPageRoute(
