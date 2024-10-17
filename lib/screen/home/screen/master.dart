@@ -5,12 +5,12 @@ import 'package:badges/badges.dart'
 import 'package:flutter/material.dart'; // Importing Flutter's Material Design package.
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart'; // Importing a package to scan barcodes.
 import 'package:mycourse_flutter/model/cart_item.dart';
-import 'package:mycourse_flutter/model/response/appresponseviewmodel.dart'; // Importing a model for the app's response data.
-import 'package:mycourse_flutter/screen/home/cart/cart.dart'; // Importing the CartPage widget.
+import 'package:mycourse_flutter/model/response/homeresponseviewmodel.dart'; // Importing a model for the app's response data.
+import 'package:mycourse_flutter/screen/cart/screen/cart.dart'; // Importing the CartPage widget.
 import 'package:mycourse_flutter/screen/home/logic/homepresentor.dart'; // Importing the presenter class for the home page.
 import 'package:mycourse_flutter/screen/home/logic/homeveiw.dart'; // Importing the view interface for the home page.
-import 'package:mycourse_flutter/screen/home/map/map.dart'; // Importing the MapScreen widget.
 import 'package:mycourse_flutter/screen/home/screen/home.dart'; // Importing the HomePage widget.
+import 'package:mycourse_flutter/screen/home/screen/map.dart'; // Importing the MapScreen widget.
 import 'package:mycourse_flutter/screen/product/productsearch/screen/search.dart'; // Importing the SearchPage widget.
 //import 'package:mycourse_flutter/screen/product/productdetail/detailproductpage.dart'; // Importing the DetailProductPage widget.
 import 'package:shared_preferences/shared_preferences.dart'; // Importing package for storing data locally.
@@ -26,7 +26,7 @@ class MasterScreen extends StatefulWidget {
 class _MasterScreenState extends State<MasterScreen> implements Homeveiw {
   int _selectedIndex =
       0; // Tracks the currently selected index of the bottom navigation bar.
-  late AppResponsemodel response; // Holds the response model data.
+  late HomeResponsemodel response; // Holds the response model data.
   late bool isLoading; // Indicates whether data is currently loading.
   late String textresponse; // Holds a string response from some API call.
   late HomePresemtor
@@ -36,7 +36,7 @@ class _MasterScreenState extends State<MasterScreen> implements Homeveiw {
   @override
   void initState() {
     super.initState(); // Calls the super class's initState method.
-    response = AppResponsemodel(
+    response = HomeResponsemodel(
       slices: [], // Initializes response with empty lists.
       products: [],
       categories: [],
@@ -212,7 +212,7 @@ class _MasterScreenState extends State<MasterScreen> implements Homeveiw {
   }
 
   @override
-  void onResponse(AppResponsemodel respdata) {
+  void onResponse(HomeResponsemodel respdata) {
     setState(() {
       response = respdata; // Updates the response data.
     });

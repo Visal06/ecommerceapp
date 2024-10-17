@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mycourse_flutter/config/card.dart';
 import 'package:mycourse_flutter/model/cart_item.dart';
-import 'package:mycourse_flutter/screen/home/cart/checkoutpage.dart';
+import 'package:mycourse_flutter/screen/cart/screen/checkoutpage.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});

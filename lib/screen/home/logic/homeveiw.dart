@@ -1,7 +1,7 @@
-import 'package:mycourse_flutter/model/response/appresponseviewmodel.dart';
+import 'package:mycourse_flutter/model/response/homeresponseviewmodel.dart';
 
 abstract class Homeveiw {
   void onLoading(bool loading);
-  void onResponse(AppResponsemodel response);
+  void onResponse(HomeResponsemodel response);
   void onStringResponse(String str);
 }

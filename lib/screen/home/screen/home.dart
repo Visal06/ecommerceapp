@@ -4,12 +4,12 @@ import 'package:flutter_image_slideshow/flutter_image_slideshow.dart';
 import 'package:mycourse_flutter/config/authmanager.dart';
 import 'package:mycourse_flutter/model/category.dart';
 import 'package:mycourse_flutter/model/product.dart';
-import 'package:mycourse_flutter/model/response/appresponseviewmodel.dart';
+import 'package:mycourse_flutter/model/response/homeresponseviewmodel.dart';
 import 'package:mycourse_flutter/model/slice.dart';
 import 'package:mycourse_flutter/screen/home/screen/notification.dart';
 
 class HomePage extends StatefulWidget {
-  final AppResponsemodel respo;
+  final HomeResponsemodel respo;
 
   const HomePage({super.key, required this.respo});
 

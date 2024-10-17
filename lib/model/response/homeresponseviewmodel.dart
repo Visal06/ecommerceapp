@@ -2,18 +2,18 @@ import 'package:mycourse_flutter/model/category.dart';
 import 'package:mycourse_flutter/model/product.dart';
 import 'package:mycourse_flutter/model/slice.dart';
 
-class AppResponsemodel {
+class HomeResponsemodel {
   final List<Products> products;
   final List<Categories> categories;
   final List<Slices> slices;
 
-  AppResponsemodel(
+  HomeResponsemodel(
       {required this.slices, required this.products, required this.categories});
 
-  factory AppResponsemodel.fromJson(Map<String, dynamic> json) {
+  factory HomeResponsemodel.fromJson(Map<String, dynamic> json) {
     // List<Products> pro =
     //     List<Products>.from(json["products"].map((e) => Products.fromJson(e)));
-    return AppResponsemodel(
+    return HomeResponsemodel(
         slices:
             List<Slices>.from(json["slices"].map((x) => Slices.fromJson(x))),
         // products: List<Products>.from(
