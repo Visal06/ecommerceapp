@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:mycourse_flutter/config/authmanager.dart';
 import 'package:mycourse_flutter/model/response/userresponsemodel.dart';
 import 'package:mycourse_flutter/model/user.dart';
-import 'package:mycourse_flutter/screen/auth/forgot.dart';
 import 'package:mycourse_flutter/screen/auth/logic/authpresentor.dart';
 import 'package:mycourse_flutter/screen/auth/logic/authview.dart';
-import 'package:mycourse_flutter/screen/auth/register.dart';
+import 'package:mycourse_flutter/screen/auth/screen/forgot.dart';
+import 'package:mycourse_flutter/screen/auth/screen/register.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mycourse_flutter/screen/auth/login.dart';
+import 'package:mycourse_flutter/screen/auth/screen/login.dart';
 
 class ForgotPage extends StatefulWidget {
   const ForgotPage({super.key});

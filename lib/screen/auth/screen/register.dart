@@ -5,7 +5,7 @@ import 'package:mycourse_flutter/model/response/userresponsemodel.dart';
 import 'package:mycourse_flutter/model/user.dart';
 import 'package:mycourse_flutter/screen/auth/logic/authpresentor.dart';
 import 'package:mycourse_flutter/screen/auth/logic/authview.dart';
-import 'package:mycourse_flutter/screen/auth/opt/otp_screen.dart';
+import 'package:mycourse_flutter/screen/auth/screen/otp_screen.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key});
