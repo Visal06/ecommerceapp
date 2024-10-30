@@ -1,3 +1,4 @@
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:mycourse_flutter/config/authmanager.dart';
 import 'package:mycourse_flutter/model/category.dart';
@@ -110,10 +111,27 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   bool isLoading = true;
   bool isAuth = false;
+  bool hasInternet = true;
+
   @override
   void initState() {
     super.initState();
-    checklogin();
+    _checkInternetAndLogin();
+  }
+
+  Future<void> _checkInternetAndLogin() async {
+    // Check internet connection
+    var connectivityResult = await Connectivity().checkConnectivity();
+    // ignore: unrelated_type_equality_checks
+    if (connectivityResult == ConnectivityResult.none) {
+      setState(() {
+        hasInternet = false;
+        isLoading = false;
+      });
+    } else {
+      // If internet is available, check login
+      await checklogin();
+    }
   }
 
   Future<void> checklogin() async {
@@ -149,6 +167,26 @@ class _HomeScreenState extends State<HomeScreen> {
                 alignment: Alignment.bottomCenter,
                 child: Text("v1.2"),
               )
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (!hasInternet) {
+      return Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.wifi_off, color: Colors.redAccent, size: 100),
+              const SizedBox(height: 20),
+              const Text('No Internet Connection'),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: _checkInternetAndLogin,
+                child: const Text('Retry'),
+              ),
             ],
           ),
         ),
