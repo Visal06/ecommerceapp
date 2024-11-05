@@ -1,6 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // For input formatting
+import 'package:mycourse_flutter/config/card.dart';
 import 'package:mycourse_flutter/model/cart_item.dart';
+import 'package:mycourse_flutter/model/request/paymentrequest.dart';
+import 'package:mycourse_flutter/screen/cart/logic/paymentpresentor.dart';
+import 'package:mycourse_flutter/screen/cart/logic/paymentview.dart';
 
 // The main widget class for the CheckoutPage
 class CheckoutPage extends StatefulWidget {
@@ -14,18 +20,35 @@ class CheckoutPage extends StatefulWidget {
   });
 
   @override
+  // ignore: library_private_types_in_public_api
   _CheckoutPageState createState() => _CheckoutPageState();
 }
 
 // State class for CheckoutPage, where the stateful behavior is implemented
-class _CheckoutPageState extends State<CheckoutPage> {
+class _CheckoutPageState extends State<CheckoutPage> implements Paymentview {
   // Controllers for text fields used for input
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController cardNumberController = TextEditingController();
-  final TextEditingController expiryDateController = TextEditingController();
-  final TextEditingController cvvController = TextEditingController();
+  TextEditingController nameController = TextEditingController();
+  TextEditingController cardNumberController = TextEditingController();
+  TextEditingController expiryDateController = TextEditingController();
+  TextEditingController cvvController = TextEditingController();
+  TextEditingController txtaddess = TextEditingController();
 
+  late AddToCard card;
+  late bool isLoading = false;
+  late String message = "";
+  late Paymentpresentor presenter;
+  late bool ispaymentprocess = true;
+
+  bool isPayByDeliveryChecked = false;
+  bool isCashByCardChecked = true;
   // Dispose method is called to release resources when the widget is removed
+  @override
+  void initState() {
+    super.initState();
+    presenter = Paymentpresentor(this);
+    card = AddToCard();
+  }
+
   @override
   void dispose() {
     nameController.dispose();
@@ -50,136 +73,150 @@ class _CheckoutPageState extends State<CheckoutPage> {
           fontSize: 22.0,
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0), // Padding around the main body
-        child: Column(
-          crossAxisAlignment:
-              CrossAxisAlignment.start, // Aligns content to the start
-          children: [
-            // Order Summary heading
-            Text(
-              'Order Summary',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black87,
-                  ),
-            ),
-            const SizedBox(height: 16.0), // Space between elements
-            // Expanded widget ensures the list occupies the remaining space
-            Expanded(
-              child: ListView.builder(
-                itemCount: widget.items.length, // Number of cart items
-                itemBuilder: (context, index) {
-                  final item = widget.items[index]; // Current cart item
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.0),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            blurRadius: 8.0,
-                            spreadRadius: 2.0,
-                            offset: const Offset(0, 4), // Shadow settings
-                          ),
-                        ],
+      body: isLoading
+          ? const CircularProgressIndicator()
+          : message != ""
+              ? Center(
+                  child: Text(message),
+                )
+              : Padding(
+                  padding: const EdgeInsets.all(
+                      16.0), // Padding around the main body
+                  child: Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // Aligns content to the start
+                    children: [
+                      // Order Summary heading
+                      Text(
+                        'Order Summary',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black87,
+                            ),
                       ),
-                      child: ListTile(
-                        leading: ClipRRect(
-                          borderRadius:
-                              BorderRadius.circular(12.0), // Rounded image
-                          child: Image.network(
-                            item.imageurl, // Image of the cart item
-                            width: 60,
-                            height: 60,
-                            fit: BoxFit.cover, // Ensures image is not stretched
-                          ),
-                        ),
-                        // Display the name and total of each item
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                item.name, // Name of the product
-                                style: const TextStyle(
-                                  fontSize: 16.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black87,
+                      const SizedBox(height: 16.0), // Space between elements
+                      // Expanded widget ensures the list occupies the remaining space
+                      Expanded(
+                        child: ListView.builder(
+                          itemCount:
+                              widget.items.length, // Number of cart items
+                          itemBuilder: (context, index) {
+                            final item =
+                                widget.items[index]; // Current cart item
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 8.0),
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(12.0),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.grey.withOpacity(0.3),
+                                      blurRadius: 8.0,
+                                      spreadRadius: 2.0,
+                                      offset:
+                                          const Offset(0, 4), // Shadow settings
+                                    ),
+                                  ],
                                 ),
-                                overflow: TextOverflow
-                                    .ellipsis, // Ellipsis if name is too long
+                                child: ListTile(
+                                  leading: ClipRRect(
+                                    borderRadius: BorderRadius.circular(
+                                        12.0), // Rounded image
+                                    child: Image.network(
+                                      item.imageurl, // Image of the cart item
+                                      width: 60,
+                                      height: 60,
+                                      fit: BoxFit
+                                          .cover, // Ensures image is not stretched
+                                    ),
+                                  ),
+                                  // Display the name and total of each item
+                                  title: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          item.name, // Name of the product
+                                          style: const TextStyle(
+                                            fontSize: 16.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black87,
+                                          ),
+                                          overflow: TextOverflow
+                                              .ellipsis, // Ellipsis if name is too long
+                                        ),
+                                      ),
+                                      // Total price (calculated as price * quantity)
+                                      Text(
+                                        'Total: \$${((double.tryParse(item.price) ?? 0.0) * (int.tryParse(item.qty) ?? 0)).toStringAsFixed(2)}',
+                                        style: const TextStyle(
+                                          fontSize: 12.0,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.green,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  // Display price and quantity
+                                  subtitle: Text(
+                                    'Price: \$${item.price} x ${item.qty}',
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 14.0,
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                            // Total price (calculated as price * quantity)
-                            Text(
-                              'Total: \$${((double.tryParse(item.price) ?? 0.0) * (int.tryParse(item.qty) ?? 0)).toStringAsFixed(2)}',
-                              style: const TextStyle(
-                                fontSize: 12.0,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.green,
-                              ),
-                            ),
-                          ],
+                            );
+                          },
                         ),
-                        // Display price and quantity
-                        subtitle: Text(
-                          'Price: \$${item.price} x ${item.qty}',
-                          style: const TextStyle(
-                            color: Colors.grey,
-                            fontSize: 14.0,
+                      ),
+                      const SizedBox(height: 16.0), // Space between elements
+                      // Display the grand total of the order
+                      Text(
+                        'Grand Total: \$${widget.totalAmounts.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 18.0,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                      const SizedBox(
+                          height: 32.0), // Space before the purchase button
+                      // Button to trigger the payment bottom sheet
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _showPaymentBottomSheet(
+                              context,
+                              widget.totalAmounts, // Pass total amount here
+                            );
+                            // Show bottom sheet for payment
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green.shade800,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 60, vertical: 16),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25.0),
+                            ),
+                          ),
+                          child: const Text(
+                            'Complete Purchase',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            const SizedBox(height: 16.0), // Space between elements
-            // Display the grand total of the order
-            Text(
-              'Grand Total: \$${widget.totalAmounts.toStringAsFixed(2)}',
-              style: const TextStyle(
-                fontSize: 18.0,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 32.0), // Space before the purchase button
-            // Button to trigger the payment bottom sheet
-            Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  _showPaymentBottomSheet(
-                    context,
-                    widget.totalAmounts, // Pass total amount here
-                  );
-                  // Show bottom sheet for payment
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green.shade800,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 60, vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(25.0),
+                    ],
                   ),
                 ),
-                child: const Text(
-                  'Complete Purchase',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -238,183 +275,219 @@ class _CheckoutPageState extends State<CheckoutPage> {
                   ),
                   textAlign: TextAlign.left, // Center the total amount
                 ),
-                const SizedBox(height: 16.0),
-                // Card widget containing payment input fields
-                Card(
-                  elevation: 4, // Shadow effect
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment:
-                          CrossAxisAlignment.start, // Align fields to the left
-                      children: [
-                        const Text(
-                          'Card Holder', // Label for cardholder's name
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black54,
-                          ),
+// The main widget class for the CheckoutPage
+                CheckboxListTile(
+                  title: const Text("Pay By Card"),
+                  value: isCashByCardChecked,
+                  onChanged: (value) {
+                    setState(() {
+                      isCashByCardChecked = value ?? false;
+                      if (isCashByCardChecked) {
+                        isPayByDeliveryChecked = false;
+                      }
+                    });
+                  },
+                ),
+                isCashByCardChecked
+                    ? Card(
+                        elevation: 4, // Shadow effect
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
                         ),
-                        const SizedBox(
-                            height: 10), // Space between label and text field
-                        // Text field for the cardholder's name
-                        TextField(
-                          controller: nameController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            labelText: 'Name on Card',
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        const Text(
-                          'Card Number', // Label for card number
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black54,
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        // Text field for the card number with input formatting and icons
-                        Stack(
-                          children: [
-                            TextField(
-                              controller: cardNumberController,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                                LengthLimitingTextInputFormatter(
-                                    16), // Max 16 digits
-                                CardNumberInputFormatter(), // Custom formatter
-                              ],
-                              decoration: const InputDecoration(
-                                border: OutlineInputBorder(),
-                                labelText: '1234 5678 9012 3456',
-                              ),
-                            ),
-                            // Visa and MasterCard icons
-                            Positioned(
-                              right: 50,
-                              top: 10,
-                              child: SizedBox(
-                                width: 30,
-                                child: Image.asset(
-                                  'assets/image/visa.png', // Visa logo
-                                  fit: BoxFit.cover,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment
+                                .start, // Align fields to the left
+                            children: [
+                              const Text(
+                                'Card Holder', // Label for cardholder's name
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54,
                                 ),
                               ),
-                            ),
-                            Positioned(
-                              right: 10,
-                              top: 10,
-                              child: SizedBox(
-                                width: 30,
-                                child: Image.asset(
-                                  'assets/image/master.png', // MasterCard logo
-                                  fit: BoxFit.cover,
+                              const SizedBox(
+                                  height:
+                                      10), // Space between label and text field
+                              // Text field for the cardholder's name
+                              TextField(
+                                controller: nameController,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Name on Card',
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
-                        // Row for expiry date and CVV inputs
-                        Row(
-                          children: [
-                            // Expiry date input field
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'Expiry Date',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black54,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
-                                  TextField(
-                                    controller: expiryDateController,
-                                    keyboardType: TextInputType.datetime,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      LengthLimitingTextInputFormatter(
-                                          4), // Max 4 digits
-                                      ExpiryDateInputFormatter(), // Custom formatter
-                                    ],
-                                    decoration: const InputDecoration(
-                                      border: OutlineInputBorder(),
-                                      labelText: 'MM/YY',
-                                    ),
-                                  ),
-                                ],
+                              const SizedBox(height: 20),
+                              const Text(
+                                'Card Number', // Label for card number
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black54,
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 16),
-                            // CVV input field
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              const SizedBox(height: 10),
+                              // Text field for the card number with input formatting and icons
+                              Stack(
                                 children: [
-                                  const Text(
-                                    'CVV',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black54,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 10),
                                   TextField(
-                                    controller: cvvController,
+                                    controller: cardNumberController,
                                     keyboardType: TextInputType.number,
                                     inputFormatters: [
                                       FilteringTextInputFormatter.digitsOnly,
                                       LengthLimitingTextInputFormatter(
-                                          3), // Max 3 digits
+                                          16), // Max 16 digits
+                                      CardNumberInputFormatter(), // Custom formatter
                                     ],
                                     decoration: const InputDecoration(
                                       border: OutlineInputBorder(),
-                                      labelText: 'CVV',
+                                      labelText: '1234 5678 9012 3456',
+                                    ),
+                                  ),
+                                  // Visa and MasterCard icons
+                                  Positioned(
+                                    right: 50,
+                                    top: 10,
+                                    child: SizedBox(
+                                      width: 30,
+                                      child: Image.asset(
+                                        'assets/image/visa.png', // Visa logo
+                                        fit: BoxFit.cover,
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    right: 10,
+                                    top: 10,
+                                    child: SizedBox(
+                                      width: 30,
+                                      child: Image.asset(
+                                        'assets/image/master.png', // MasterCard logo
+                                        fit: BoxFit.cover,
+                                      ),
                                     ),
                                   ),
                                 ],
                               ),
-                            ),
-                          ],
+                              const SizedBox(height: 20),
+                              // Row for expiry date and CVV inputs
+                              Row(
+                                children: [
+                                  // Expiry date input field
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'Expiry Date',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        TextField(
+                                          controller: expiryDateController,
+                                          keyboardType: TextInputType.datetime,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter
+                                                .digitsOnly,
+                                            LengthLimitingTextInputFormatter(
+                                                4), // Max 4 digits
+                                            ExpiryDateInputFormatter(), // Custom formatter
+                                          ],
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: 'MM/YY',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(width: 16),
+                                  // CVV input field
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        const Text(
+                                          'CVV',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 10),
+                                        TextField(
+                                          controller: cvvController,
+                                          keyboardType: TextInputType.number,
+                                          inputFormatters: [
+                                            FilteringTextInputFormatter
+                                                .digitsOnly,
+                                            LengthLimitingTextInputFormatter(
+                                                3), // Max 3 digits
+                                          ],
+                                          decoration: const InputDecoration(
+                                            border: OutlineInputBorder(),
+                                            labelText: 'CVV',
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 20),
-                        // Button to submit payment
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // Handle payment logic here
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green.shade800,
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 40, vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25.0),
-                              ),
-                            ),
-                            child: const Text(
-                              'Make Payment',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18.0,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      )
+                    : TextFormField(
+                        controller: txtaddess,
+                        keyboardType: TextInputType.number,
+                        maxLength: 3, // Typically CVC is 3 digits
+                        decoration: InputDecoration(
+                          labelText: 'address',
+                          hintText: 'Phnom Penh',
+                          counterText: "", // Removes character count indicator
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(8.0),
+                            borderSide: const BorderSide(
+                              color: Colors.blue,
+                              width: 2.0,
                             ),
                           ),
                         ),
-                      ],
+                      ),
+
+                const SizedBox(height: 20),
+                // Button to submit payment
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      // Handle payment logic here
+                      onPayment();
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green.shade800,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 40, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                    ),
+                    child: const Text(
+                      'Make Payment',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
@@ -424,6 +497,39 @@ class _CheckoutPageState extends State<CheckoutPage> {
         );
       },
     );
+  }
+
+  @override
+  void onLoading(bool loading) {
+    setState(() {
+      isLoading = loading;
+    });
+  }
+
+  @override
+  void onMessage(String str) {
+    setState(() {
+      message = str;
+      Navigator.pop(context);
+      card.removeFromCartall();
+    });
+  }
+
+  @override
+  void onPayment() {
+    setState(() {
+      var payment = PaymentRequest(
+          holdername: nameController.text,
+          acc: cardNumberController.text,
+          dates: expiryDateController.text,
+          cvc: cvvController.text,
+          amount: widget.totalAmounts.toString(),
+          address: txtaddess.text,
+          payby: isPayByDeliveryChecked ? "Pay By Delivery" : "Pay By Card",
+          product: widget.items);
+      print(jsonEncode(payment));
+      presenter.paymentprocess(payment);
+    });
   }
 }
 

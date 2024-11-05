@@ -10,4 +10,5 @@ class ApiService {
   static const String getAllProducts = "$base/app/product/getllProducts/";
   static const String getAllCategory = "$base/app/product/getallCategories/";
   static const String getAllOnboard = "$base/app/product/getallOnboard/";
+  static const String payment = "$base/app/payment/";
 }

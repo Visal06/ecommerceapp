@@ -57,4 +57,11 @@ class AddToCard {
     await _saveToPrefs(cartItems); // Save the updated list to SharedPreferences
     return true;
   }
+
+  // Method to remove an item from the cart by productId
+  Future<bool> removeFromCartall() async {
+    SharedPreferences preferences = await SharedPreferences.getInstance();
+    await preferences.remove("cart_items");
+    return true;
+  }
 }
