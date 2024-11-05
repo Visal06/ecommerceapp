@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
+	
 <dict>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>We need your location to provide better service.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Your location is needed for continuous access.</string>
+	<key>GMSApiKey</key>
+	<string>AIzaSyAoYL_Yfoyy3GTyU1wB_W1wnHFu0NznXlo</string>	
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Your location is needed to show nearby locations.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Your location is needed for continuous access.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Your message to the user when requesting location access</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -33,6 +44,7 @@
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
 	<key>UISupportedInterfaceOrientations</key>
+	
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
@@ -57,5 +69,6 @@
     <key>NSAllowsArbitraryLoads</key>
     <true/>
 </dict>
+
 </dict>
 </plist>

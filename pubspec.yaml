@@ -57,6 +57,7 @@ dependencies:
   page_indicator: ^0.4.1
   flutter_masked_text2: ^0.9.1
   connectivity_plus: ^6.1.0
+  geocoding: ^2.0.0 
   
 
 

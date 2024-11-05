@@ -7,6 +7,7 @@ import 'package:mycourse_flutter/model/cart_item.dart';
 import 'package:mycourse_flutter/model/request/paymentrequest.dart';
 import 'package:mycourse_flutter/screen/cart/logic/paymentpresentor.dart';
 import 'package:mycourse_flutter/screen/cart/logic/paymentview.dart';
+import 'package:mycourse_flutter/screen/cart/screen/cartmap.dart';
 
 // The main widget class for the CheckoutPage
 class CheckoutPage extends StatefulWidget {
@@ -57,6 +58,25 @@ class _CheckoutPageState extends State<CheckoutPage> implements Paymentview {
     expiryDateController.dispose();
     cvvController.dispose();
     super.dispose();
+  }
+
+// Add a method to open the map
+  void _selectLocation() async {
+    // Navigate to MapScreen and wait for the result
+    final String? result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const MapScreen()),
+    );
+
+    // Update the address text field with the selected location
+    if (result != null && result.isNotEmpty) {
+      setState(() {
+        txtaddess.text = result; // Set the detailed address string
+        print(result);
+      });
+    } else {
+      print('No address was returned'); // Debug print
+    }
   }
 
   // The build method describes the UI and the layout of the CheckoutPage
@@ -500,6 +520,11 @@ class _CheckoutPageState extends State<CheckoutPage> implements Paymentview {
                                   labelText: 'Your Phone Number',
                                 ),
                               ),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: _selectLocation,
+                                child: const Text('Select Location on Map'),
+                              ),
                             ],
                           ),
                     const SizedBox(height: 20),
@@ -537,6 +562,8 @@ class _CheckoutPageState extends State<CheckoutPage> implements Paymentview {
       },
     );
   }
+
+  // Create a placeholder for the Map Selection Screen
 
   @override
   void onLoading(bool loading) {
