@@ -7,6 +7,7 @@ class PaymentRequest {
   final String cvc;
   final String amount;
   final String address;
+  final String phone;
   final String payby;
   final List<CartItem> product;
 
@@ -17,6 +18,7 @@ class PaymentRequest {
     required this.cvc,
     required this.amount,
     required this.address,
+    required this.phone,
     required this.payby,
     required this.product,
   });
@@ -29,6 +31,7 @@ class PaymentRequest {
       'cvc': cvc,
       'amount': amount,
       'address': address,
+      'phone': phone,
       'payby': payby,
       'product': product
     };
@@ -42,6 +45,7 @@ class PaymentRequest {
         cvc: json['cvc'],
         amount: json['amount'],
         address: json['address'],
+        phone: json['phone'],
         payby: json['payby'],
         product: json['product']);
   }
